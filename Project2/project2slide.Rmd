@@ -1,0 +1,321 @@
+---
+title: '<font size = 7 color = "black">Sampling loans by Region</font>' 
+author: '<font size = 6 color = "black"> Samantha Gouveia & Joshua Grant </font>'
+date: ' <font color = "white" size =4>3/19/24<br> </font> <font color = "black" size = 6> STA490: Statistics Capstone </font>'
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer01.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r echo=FALSE, include=FALSE}
+library(knitr)
+   library(car)
+   library(dplyr)
+   library(kableExtra)
+   library(pander)
+  library(reshape2)
+  library(ggplot2)
+```
+
+
+# <h2 align="center">Objective</h2>
+<br>
+<br>
+
+- Removing Values 
+- Stratifying Populations 
+- Sampling Techniques
+
+    - Random Samples
+    
+    - Systematic Samples
+    
+    - Stratified Samples
+    
+    - Clustered Samples
+
+---
+
+
+
+
+
+
+# <h2 align="center">Data Introduction</h2>
+
+<body> 
+<div style="width 6"> 
+<br>
+<br>
+<br>
+
+
+The data we are using is from the U.S. Small Business Administration 
+<br>
+<br>
+<br>
+
+It provides historical data from 1987 until 2014 
+<br>
+<br>
+<br>
+
+There are 27 variables and 899,164 observations each representing a loan
+</div>
+</body>
+
+```{r echo=FALSE, include=FALSE}
+
+loan01 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational01.csv", header = TRUE)[, -1]
+loan02 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational02.csv", header = TRUE)[, -1]
+loan03 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational03.csv", header = TRUE)[, -1]
+loan04 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational04.csv", header = TRUE)[, -1]
+loan05 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational05.csv", header = TRUE)[, -1]
+loan06 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational06.csv", header = TRUE)[, -1]
+loan07 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational07.csv", header = TRUE)[, -1]
+loan08 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational08.csv", header = TRUE)[, -1]
+loan09 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational09.csv", header = TRUE)[, -1]
+loan = rbind(loan01, loan02, loan03, loan04, loan05, loan06, loan07, loan08, loan09)
+```
+
+---
+#  <h2 align="center">Remove missing values</h2>
+<br>
+<br>
+
+
+We begin by removing any loans that are missing an MIS Status
+<br>
+<br>
+
+Removing the missing MIS status values allows for the data to be equal for each of the samples
+<br>
+<br>
+
+We find there are 155 MIS values missing
+
+```{r Remove Missing Values, echo=FALSE}
+
+###1 Remove missing MIS_Status values 
+sum2 <- sum(is.na(loan$MIS_Status))
+nloan <- na.omit(loan)
+
+```
+
+---
+
+#  <h2 align="center">Stratifing the Population</h2>
+<br>
+<br>
+
+We stratify the population based on the region the loan is in 
+<br>
+<br>
+
+By stratifying the data into regions we have created 9 sub populations
+<br>
+<br>
+
+This will allow us to see a more accurate result due to there being smaller sample sizes
+
+- New England 
+- Mid-Atlantic
+- South
+- Great Lakes
+- Midwest
+- Pacific Coast
+- Non Continental
+- Rocky Mountain 
+- Southwest
+
+
+
+---
+# <h2 align="center"> Number of observations in each Region </h2>
+
+```{r echo=FALSE}
+
+#Remove observations w/o state classification
+nloan$State[nloan$State == ""] <- NA
+nloan <- na.omit(nloan)
+
+
+cnvrt <- c(
+   "ME" = "New England", "NH" = "New England", "VT" = "New England", "MA" = "New England", "RI" = "New England", "CT" = "New England",
+   "NJ" = "Mid-Atlantic", "DE" = "Mid-Atlantic", "MD" = "Mid-Atlantic", "DC" = "Mid-Atlantic",  
+   "WV" = "South", "VA" = "South", "NC" = "South", "SC" = "South", "GA" = "South", "FL" = "South", "KY" = "South", "TN" = "South", "AL" = "South", "MS" = "South", "AR" = "South", "LA" = "South",
+   "MN" = "Great Lakes", "WI" = "Great Lakes", "MI" = "Great Lakes", "OH" = "Great Lakes", "IN" = "Great Lakes", "IL" = "Great Lakes", "IA" = "Great Lakes","NY" = "Great Lakes",  "PA" = "Great Lakes", "MO" = "Midwest",
+   "ND" = "Midwest", "SD" = "Midwest", "NE" = "Midwest", "KS" = "Midwest", "OK" = "Midwest",
+   "MT" = "Rocky Mountain", "WY" = "Rocky Mountain", "CO" = "Rocky Mountain", "UT" = "Rocky Mountain", "ID" = "Rocky Mountain",
+   "NV" = "Southwest", "AZ" = "Southwest", "NM" = "Southwest", "TX" = "Southwest",
+   "WA" = "Pacific Coast", "OR" = "Pacific Coast", "CA" = "Pacific Coast",
+   "AK" = "Non Continental", "HI" = "Non Continental"
+  
+)
+```
+
+
+```{r echo=FALSE}
+nloan$Region <- cnvrt[nloan$State]
+
+cregion <- nloan %>%
+  count(Region) %>%
+  rename(Count = n)
+
+kable_region <- kable(cregion, format = "markdown")
+
+kable_region 
+```
+
+
+---
+# Cluster by Zip Code
+<br>
+<br>
+<br>
+We cluster by zip code using the entire study population. We will create clusters and select 9 of them to be used as the final study population.
+<br>
+<br>
+<br>
+
+When clustering by zip code it is important for the researchers to know we have a chance of getting no data from smaller areas as they may be picked less often.
+```{r echo=FALSE}
+nloan <- nloan[!is.na(nloan$Zip), ]
+
+num_clusters <- 7
+
+kmeans_result <- kmeans(nloan$Zip, centers = num_clusters)
+
+cluster_centers <- kmeans_result$centers
+
+nloan$Cluster <- kmeans_result$cluster
+
+```
+
+---
+
+# Simple Random Sampling 
+<br>
+<br>
+<br>
+
+A simple random sample allows for each observation to have an equal chance of being chosen
+<br>
+<br>
+<br>
+
+A sample size of 100 
+
+
+```{r echo=FALSE}
+
+set.seed(123)  
+random_sample <- sample_n(nloan, size = 100)  
+
+```
+
+---
+
+# Systematic Sample
+<br>
+<br>
+<br>
+
+A systematic sample uses a random sample from the population at a fixed interval of 50
+<br>
+<br>
+<br>
+
+By using the systematic sample there will be no influence over which loans are chosen allowing for the study to be unbiased.
+```{r echo=FALSE}
+
+systematic_sample <- nloan[seq(1, nrow(nloan), by = 50), ]
+```
+
+---
+
+# Stratified Sample
+<br>
+<br>
+<br>
+
+A stratified sample will be done using the 7 regions we created earlier in the study.
+<br>
+<br>
+<br>
+
+A sample size of 100 will be taken from each region and used in the final study population. This allows for there to be little bias as there is an equal amount of samples from each regions.
+```{r echo=FALSE}
+
+stratified_sample <- nloan %>%
+  group_by(Region) %>%
+  sample_n(size = 100)  # Adjust the sample size as needed
+```
+
+
+---
+# <h1 align="center">True Default Rate</h1>
+<br>
+
+<div align="center">
+```{r echo=FALSE}
+True <- summarize(group_by(select(nloan,Region,MIS_Status),Region),True_Default_Rate = (sum(MIS_Status == "CHGOFF")/n()))
+kable(True)
+```
+</div>
+---
+
+# <h1 align="center">Sample Default Rate</h1>
+
+<div align="center">
+```{r echo=FALSE}
+Sample <- summarize(group_by(select(stratified_sample,Region,MIS_Status),Region),Sample_Default_Rate = (sum(MIS_Status == "CHGOFF")/n()))
+kable(Sample)
+```
+</div>
+---
+
+# <h1 align="center">Comparison Table</h1>
+
+<div align="center">
+```{r echo=FALSE,}
+Comparison_Table <- merge(True, Sample, by = "Region")
+
+kable(Comparison_Table)
+```
+</div>
+---
+
+```{r echo=FALSE}
+
+Graph_Table <- melt(Comparison_Table, Rid.vars='Region')
+Graph_Table <- Graph_Table %>% rename_at('value', ~'Default_Rate')
+
+ggplot(Graph_Table, aes(x=Region, y=Default_Rate, fill=variable)) +
+    geom_bar(stat='identity', position='dodge',)   +
+    scale_fill_manual(values = c("red", "pink")) +
+coord_flip()
+```
+
+---
+
+<h2 align="center">Conclusion</h2>
+<br>
+<br>
+
+Throughout the study we have looked at the data provided by the U.S. Small Business Administration 
+<br>
+<br>
+<br>
+
+Used 4 different sampling methods to analysis loans
+<br>
+<br>
+<br>
+We compared the true default with stratified sampling 
