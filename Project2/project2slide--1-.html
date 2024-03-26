@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Sampling loans by Region</title>
+    <meta charset="utf-8" />
+    <meta name="author" content=" Samantha Gouveia &amp; Joshua Grant " />
+    <script src="project2slide--1-_files/header-attrs-2.25/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer01.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# <font size = 7 color = "White">Sampling loans by Region</font>
+]
+.author[
+### <font size = 6 color = "white"> Samantha Gouveia &amp; Joshua Grant </font>
+]
+.date[
+### <font color = "white" size =5>3/26/24<br> </font> <font color = "white" size = 6> STA490: Statistics Capstone </font>
+]
+
+---
+
+
+
+
+
+# &lt;h2 align="center"&gt;Objective&lt;/h2&gt;
+&lt;br&gt;
+- Removing Values
+&lt;br&gt;
+- Stratifying Populations
+&lt;br&gt;
+- Sampling Techniques
+
+    - Random Samples
+    
+    - Systematic Samples
+    
+    - Stratified Samples
+    
+    - Clustered Samples
+
+---
+
+
+# &lt;h2 align="center"&gt;Data Introduction&lt;/h2&gt;
+
+&lt;body&gt; 
+&lt;div style="width 6"&gt; 
+&lt;br&gt;
+&lt;br&gt;
+
+
+
+The data being using is from the U.S. Small Business Administration 
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+ It provides historical data from 1987 until 2014 
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+There are 27 variables and 899,164 observations each representing a loan
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+
+---
+#  &lt;h2 align="center"&gt;Remove missing values&lt;/h2&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+
+- We begin by removing any loans that are missing an MIS Status
+&lt;br&gt;
+&lt;br&gt;
+
+- Removing the missing MIS status values allows for the data to be equal for each of the samples
+&lt;br&gt;
+&lt;br&gt;
+
+- We find there are 155 MIS values missing
+
+
+
+---
+# &lt;h2 align="center"&gt;Map of Regions&lt;/h2&gt;
+
+&lt;div align="center"&gt;
+&lt;img src="img/map.png" width ="55%"&gt;
+&lt;/div&gt;
+
+---
+
+#  &lt;h2 align="center"&gt;Stratifing the Population&lt;/h2&gt;
+&lt;br&gt;
+
+We stratify the population based on the region the loan is in 
+&lt;br&gt;
+
+By stratifying the data into regions we have created 9 sub populations
+&lt;br&gt;
+
+This will allow us to see a more accurate result due to there being smaller sample sizes
+
+- New England 
+- Mid-Atlantic
+- South
+- Great Lakes
+- Midwest
+- Pacific Coast
+- Non Continental
+- Rocky Mountain 
+- Southwest
+
+
+
+---
+# &lt;h2 align="center"&gt; Number of observations in each Region &lt;/h2&gt;
+
+
+
+
+
+|Region          |  Count|
+|:---------------|------:|
+|Great Lakes     | 247186|
+|Mid-Atlantic    |  41134|
+|Midwest         |  58146|
+|New England     |  70023|
+|Non Continental |   6014|
+|Pacific Coast   | 164920|
+|Rocky Mountain  |  60453|
+|South           | 149001|
+|Southwest       | 102132|
+
+
+---
+# Cluster by Zip Code
+&lt;br&gt;
+&lt;br&gt;
+- We cluster by zip code using the entire study population. We will create clusters and select 9 of them to be used as the final study population.
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- When clustering by zip code it is important for the researchers to know we have a chance of getting no data from smaller areas as they may be picked less often.
+
+
+---
+
+# Simple Random Sampling 
+&lt;br&gt;
+&lt;br&gt;
+
+- A simple random sample allows for each observation to have an equal chance of being chosen
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- A sample size of 100 
+
+
+
+
+---
+
+# Systematic Sample
+&lt;br&gt;
+&lt;br&gt;
+
+- A systematic sample uses a random sample from the population at a fixed interval of 50
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- By using the systematic sample there will be no influence over which loans are chosen allowing for the study to be unbiased.
+
+
+---
+
+# Stratified Sample
+&lt;br&gt;
+&lt;br&gt;
+
+- A stratified sample will be done using the 9 regions we created earlier in the study.
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- A sample proportional to 10% of the total number loans in each region is taken per region. This keeps the proportion of observations from each region equal to that of the total population.
+
+
+
+
+
+---
+# &lt;h1 align="center"&gt;True Default Rate&lt;/h1&gt;
+&lt;br&gt;
+
+
+
+|Region          | True_Default_Rate|
+|:---------------|-----------------:|
+|Great Lakes     |         0.1718382|
+|Mid-Atlantic    |         0.1999319|
+|Midwest         |         0.1318749|
+|New England     |         0.1178470|
+|Non Continental |         0.1380113|
+|Pacific Coast   |         0.1765462|
+|Rocky Mountain  |         0.1507783|
+|South           |         0.2175623|
+|Southwest       |         0.1903713|
+
+---
+
+# &lt;h1 align="center"&gt;Sample Default Rate&lt;/h1&gt;
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Region &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Sample_Default_Rate &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Great Lakes &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.16 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mid-Atlantic &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.17 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Midwest &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; New England &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Non Continental &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pacific Coast &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Rocky Mountain &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.17 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; South &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.24 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Southwest &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.34 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+# &lt;h1 align="center"&gt;Comparison Table&lt;/h1&gt;
+
+
+
+|Region          | True_Default_Rate| Sample_Default_Rate|
+|:---------------|-----------------:|-------------------:|
+|Great Lakes     |         0.1718382|                0.16|
+|Mid-Atlantic    |         0.1999319|                0.17|
+|Midwest         |         0.1318749|                0.11|
+|New England     |         0.1178470|                0.10|
+|Non Continental |         0.1380113|                0.15|
+|Pacific Coast   |         0.1765462|                0.13|
+|Rocky Mountain  |         0.1507783|                0.17|
+|South           |         0.2175623|                0.24|
+|Southwest       |         0.1903713|                0.34|
+
+---
+
+
+```
+## Using Region as id variables
+```
+
+![](project2slide--1-_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+---
+&lt;h2 align="center"&gt;Best Sampling method&lt;/h2&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- Found Stratified yields best results
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+- Guarantee all regions are weighted equally
+
+
+---
+
+&lt;h2 align="center"&gt;Conclusion&lt;/h2&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- Throughout the study we have looked at the data provided by the U.S. Small Business Administration 
+&lt;br&gt;
+&lt;br&gt;
+
+
+- Used 4 different sampling methods to analysis loans
+&lt;br&gt;
+&lt;br&gt;
+
+- We compared the true default with defalut rate using stratified sampling 
+&lt;br&gt;
+&lt;br&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
