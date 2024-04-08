@@ -75,7 +75,8 @@ p { background-color:white; }
 
 </style>
 ```
-
+##Data Introduction
+The data set collected is from the small buisness association regarding different loans.
 ```{r}
 loan01 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational01.csv", header = TRUE)[, -1]
 loan02 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational02.csv", header = TRUE)[, -1]
@@ -90,9 +91,12 @@ loan = rbind(loan01, loan02, loan03, loan04, loan05, loan06, loan07, loan08, loa
 # dim(bankLoan)
 #names(bankLoan)
 ```
-
+# MIS values 
+ we will remove any missing MIS values from our data set. The main reasone for this is because the MIS_Status is our response variable. Without removing it we can not preform our analysis of the data.
 ```{r}
 loan<- loan[complete.cases(loan$MIS_Status), ]
+
+Once we look at the MIS values we find that 1997 observations do not have  MIS values and we will therfore remove those observations.
 ```
 
 ```{r}
