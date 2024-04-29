@@ -1,0 +1,465 @@
+---
+title: "Untitled"
+author: "Samantha Gouveia"
+date: "`r Sys.Date()`"
+output: ioslides_presentation
+---
+
+---
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer01.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r}
+
+   library(tidyverse)
+   library(GPArotation)
+   library(psych)
+   library(nFactors)
+   library(rmarkdown)
+   library(knitr)
+   library(parameters)
+   library(corrplot)
+   library(ggcorrplot)
+   library(ggfortify)
+   require(ggplot2)
+   require(GGally) 
+   require(CCA)
+   require(olsrr)
+   require(cocron)
+```
+# Introduction 
+
+The purpose of this study is to look at the impact of students satisfaction. The study looks at undergraduate students in two business schools and two universities in the US. The study focuses on the aspects with the best satisfaction whether it be academic or extracurricular.
+
+# Data 
+
+The survey asks 121 questions about demographics, class performance, and 9 questions looking to explain performance and satisfaction.
+
+The 3 sections that are responsive questions:
+
+- Academic Standing
+- Satisfaction
+- Demographics
+
+The 9 sections that are explanatory questions:
+
+- Student engagement in learning
+- writing and reading load
+- Encouragement and support
+- Learning style
+- Remedial experience
+- Growth and development
+- Retention
+- Resource utilization
+- How students pay for college
+```{r}
+survey = read.csv('https://raw.githubusercontent.com/sgouveia23/SGouveia/main/week%2011/at-risk-survey-data%20(2).csv')
+
+survey <- na.omit(survey)
+```
+
+We begin by creating the data set.
+```{r}
+my.mode = function(dataset){
+  freq.tbl = table(dataset)
+  max.freq.id=which(freq.tbl==max(freq.tbl))
+  mode=names(freq.tbl[max.freq.id])
+  as.numeric(mode)
+}
+```
+
+# Validity and Reliability
+
+We start by making correlation plots on our variables to preform PCA on the data.
+
+We will be looking at the pairwise correlation plot to show the relevance of the PCA. The shape of the ellipse represents the correlation with the direction showing if it is positive or negative.
+
+We will also look at Cronbach's Alpha on the correlation plot to determine the reliability.
+
+# Correlation plots
+
+To begin we will look at the correlation matrix and Cronback's for engagement.
+
+```{r}
+engagement <- survey[, 4:24]
+
+M1=cor(engagement)
+corrplot.mixed(M1, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+cronbach.sc1 = as.numeric(alpha(engagement)$total[1])
+CI.sc1 = cronbach.alpha.CI(alpha=cronbach.sc1, n=332, items=21, conf.level = 0.95)
+CI.comp1 = cbind(LCI = CI.sc1[1], alpha = cronbach.sc1, UCI =CI.sc1[2])
+row.names(CI.comp1) = ""
+kable(CI.comp1, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see a strong positive correlation when looking at the matrix.
+The cronbach's alpha shows reliability at the 95% CI for alpha is [.858,.896]
+
+# Learning Style 
+
+Next we will look at the correlation matrix and Cronback's for learning style.
+
+```{r}
+learn <- survey[, 25:30]
+M2=cor(learn)
+corrplot.mixed(M2, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+cronbach.sc2 = as.numeric(alpha(learn)$total[1])
+CI.sc2 = cronbach.alpha.CI(alpha=cronbach.sc2, n=332, items=6, conf.level = 0.95)
+CI.comp2 = cbind(LCI = CI.sc2[1], alpha = cronbach.sc2, UCI =CI.sc2[2])
+row.names(CI.comp2) = ""
+kable(CI.comp2, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see a strong positive correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows reliability at the 95% CI for alpha is [0.821, 0.872].
+
+# Writing and Reading
+
+Next we will look at the correlation matrix and Cronback's for Writing and Reading load.
+
+```{r}
+writeread <- survey[, 31:33]
+M3=cor(writeread)
+corrplot.mixed(M3, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+
+cronbach.sc3 = as.numeric(alpha(writeread)$total[1])
+CI.sc3 = cronbach.alpha.CI(alpha=cronbach.sc3, n=332, items=3, conf.level = 0.95)
+CI.comp3 = cbind(LCI = CI.sc3[1], alpha = cronbach.sc3, UCI =CI.sc3[2])
+row.names(CI.comp3) = ""
+kable(CI.comp3, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see a strong positive correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows a weak reliability at the 95% CI for alpha is [.389, .579]. 
+
+# Age
+
+Next we will look at the correlation matrix and Cronback's for age.
+
+```{r}
+age <- survey[, 3:23]
+
+M4=cor(age)
+corrplot.mixed(M4, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+```
+
+We see a strong positive correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows at reliability the 95% CI for alpha is [0.821, 0.872].
+
+```{r}
+cronbach.sc4 = as.numeric(alpha(age)$total[1])
+CI.sc4 = cronbach.alpha.CI(alpha=cronbach.sc4, n=332, items=3, conf.level = 0.95)
+CI.comp4 = cbind(LCI = CI.sc4[1], alpha = cronbach.sc4, UCI =CI.sc4[2])
+row.names(CI.comp4) = ""
+kable(CI.comp4, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+# Gender
+
+Next we will look at the correlation matrix and Cronback's alpha for gender
+.
+```{r}
+gender <- survey[,1:7]
+
+M6=cor(gender)
+corrplot.mixed(M6, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+cronbach.sc6 = as.numeric(alpha(gender)$total[1])
+CI.sc6 = cronbach.alpha.CI(alpha=cronbach.sc6, n=104, items=6, conf.level = 0.95)
+CI.comp6 = cbind(LCI = CI.sc6[1], alpha = cronbach.sc6, UCI =CI.sc6[2])
+row.names(CI.comp6) = ""
+kable(CI.comp6, caption="Confodence Interval of Cranbach Alpha")
+```
+
+We see a strong positive correlation for the majority of the points. 
+However we do see a negative correlation for 7 of the values.
+
+The Cronbach's Alpha shows at there is not reliability at the 95% CI.
+
+# Support
+
+Next we will look at the correlation matrix and Cronback's alpha for support.
+
+```{r}
+support <- survey[, 44:50]
+
+M7=cor(support)
+corrplot.mixed(M7, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+
+cronbach.sc7 = as.numeric(alpha(support)$total[1])
+CI.sc7 = cronbach.alpha.CI(alpha=cronbach.sc7, n=332, items=7, conf.level = 0.95)
+CI.comp7 = cbind(LCI = CI.sc7[1], alpha = cronbach.sc7, UCI =CI.sc7[2])
+row.names(CI.comp7) = ""
+kable(CI.comp7, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see a strong positive correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows at reliability the 95% CI for alpha is [.804, .859]
+
+# Growth
+
+Next we will look at the correlation matrix and Cronback's alpha for growth.
+
+```{r}
+growth <- survey[, 51:65]
+
+M8=cor(growth)
+corrplot.mixed(M8, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+
+cronbach.sc8 = as.numeric(alpha(support)$total[1])
+CI.sc8 = cronbach.alpha.CI(alpha=cronbach.sc8, n=332, items=7, conf.level = 0.95)
+CI.comp8 = cbind(LCI = CI.sc8[1], alpha = cronbach.sc8, UCI =CI.sc8[2])
+row.names(CI.comp8) = ""
+kable(CI.comp8, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see a strong positive correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows at reliability the 95% CI for alpha is [.938, .955]
+
+# Pay
+
+Next we will look at the correlation matrix and Cronback's alpha for pay.
+
+```{r}
+pay <- survey[, 104:109]
+
+M9=cor(pay)
+corrplot.mixed(M9, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+cronbach.sc9 = as.numeric(alpha(support)$total[1])
+CI.sc9 = cronbach.alpha.CI(alpha=cronbach.sc9, n=332, items=7, conf.level = 0.95)
+CI.comp9 = cbind(LCI = CI.sc9[1], alpha = cronbach.sc9, UCI =CI.sc9[2])
+row.names(CI.comp9) = ""
+kable(CI.comp9, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see both a positive and negative correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows at there is not reliability at the 95% CI.
+
+# Retention
+
+Next we will look at the correlation matrix and Cronback's alpha for retention.
+
+```{r}
+reten <- survey[, 99:103]
+
+M10=cor(reten)
+corrplot.mixed(M10, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+
+cronbach.sc10 = as.numeric(alpha(support)$total[1])
+CI.sc10 = cronbach.alpha.CI(alpha=cronbach.sc10, n=332, items=7, conf.level = 0.95)
+CI.comp10 = cbind(LCI = CI.sc10[1], alpha = cronbach.sc10, UCI =CI.sc10[2])
+row.names(CI.comp10) = ""
+kable(CI.comp10, caption="Confidence Interval of Cronbach Alpha", digits = 3)
+```
+
+We see a strong positive correlation when looking at the correlation matrix.
+
+The Cronbach's Alpha shows at reliability the 95% CI for alpha is [.732, .810]
+
+
+# PCA
+
+To begin looking at the PCA we will use student engagement and writing/reading load as the response variable.
+
+# Scree Plot
+
+A scree plot will be used to assess the our variables.xt
+
+Next factor loading and proportion variance will be looked at and explained by each of the factors.
+
+```{r}
+My.plotnScree = function(mat, legend = TRUE, method ="factors", main){
+    # mat = data matrix
+    # method = c("factors", "components"), default is "factors".
+    # main = title of the plot
+    ev <- eigen(cor(mat))    # get eigenvalues
+    ap <- parallel(subject=nrow(mat),var=ncol(mat), rep=5000,cent=.05)
+    nScree = nScree(x=ev$values, aparallel=ap$eigen$qevpea, model=method)  
+    ##
+    if (!inherits(nScree, "nScree")) 
+        stop("Method is only for nScree objects")
+    if (nScree$Model == "components") 
+        nkaiser = "Eigenvalues > mean: n = "
+    if (nScree$Model == "factors") 
+      nkaiser = "Eigenvalues > zero: n = "
+    # axis labels
+    xlab = nScree$Model
+    ylab = "Eigenvalues"
+    ##
+    par(col = 1, pch = 18)
+    par(mfrow = c(1, 1))
+    eig <- nScree$Analysis$Eigenvalues
+    k <- 1:length(eig)
+    plot(1:length(eig), eig, type="b", main = main, 
+        xlab = xlab, ylab = ylab, ylim=c(0, 1.2*max(eig)))
+    #
+    nk <- length(eig)
+ noc <- nScree$Components$noc
+    vp.p <- lm(eig[c(noc + 1, nk)] ~ k[c(noc + 1, nk)])
+    x <- sum(c(1, 1) * coef(vp.p))
+    y <- sum(c(1, nk) * coef(vp.p))
+    par(col = 10)
+    lines(k[c(1, nk)], c(x, y))
+    par(col = 11, pch = 20)
+    lines(1:nk, nScree$Analysis$Par.Analysis, type = "b")
+    if (legend == TRUE) {
+        leg.txt <- c(paste(nkaiser, nScree$Components$nkaiser), 
+                   c(paste("Parallel Analysis: n = ", nScree$Components$nparallel)), 
+                   c(paste("Optimal Coordinates: n = ", nScree$Components$noc)), 
+                   c(paste("Acceleration Factor: n = ", nScree$Components$naf))
+                   )
+        legend("topright", legend = leg.txt, pch = c(18, 20, NA, NA), 
+                           text.col = c(1, 3, 2, 4), 
+                           col = c(1, 3, 2, 4), bty="n", cex=0.7)
+    }
+    naf <- nScree$Components$naf
+    text(x = noc, y = eig[noc], label = " (OC)", cex = 0.7, 
+        adj = c(0, 0), col = 2)
+    text(x = naf + 1, y = eig[naf + 1], label = " (AF)", 
+        cex = 0.7, adj = c(0, 0), col = 4)
+}
+
+```
+   
+
+```{r}
+
+My.loadings.var <- function(mat, nfct, method="fa"){
+   # mat =  data matrix
+   # nfct = number of factors or components
+   # method = c("fa", "pca"), default = is "fa".
+    if(method == "fa"){ 
+     f1 <- factanal(mat, factors = nfct,  rotation = "varimax")
+     x <- loadings(f1)
+     vx <- colSums(x^2)
+     varSS = rbind('SS loadings' = vx,
+            'Proportion Var' = vx/nrow(x),
+           'Cumulative Var' = cumsum(vx/nrow(x)))
+     weight = f1$loadings[] 
+   } else if (method == "pca"){
+     pca <- prcomp(mat, center = TRUE, scale = TRUE)
+     varSS = summary(pca)$importance[,1:nfct]
+     weight = pca$rotation[,1:nfct]
+  }
+    list(Loadings = weight, Prop.Var = varSS)
+}
+```
+    
+ ## PCA Extraction 
+
+First, we will use our Scree plots to determine the number of principal components needed,
+
+```{r}
+
+My.plotnScree(mat=engagement, legend = TRUE, method ="components", 
+              main="Determination of Number of Components\n Student Engagement (Positive)")
+```
+
+The scree plot shows that five of the components should be retained for exploratory analysis. We see the first four eiganvalues are higher than the rest. This shows a significant amount of variance. The last eiganvalue is flatter than the rest and will be kept to look at the variances.
+
+
+Next, we look at the factor loadings to determine which variables will be used. 
+
+```{r}
+
+Loadings = My.loadings.var(mat=engagement, nfct=2, method="pca")$Loadings
+#
+# pca loadings
+kable(round(Loadings,3),
+  caption="Factor loadings of the first few PCAs and the cumulative proportion
+of variation explained by the corresponding PCAs in the Engagement subscale.")
+```
+   
+   
+```{r}
+
+VarProp = My.loadings.var(mat=engagement, nfct=5, method="pca")$Prop.Var
+# pca loadings
+kable(round(VarProp,3),
+    caption="Cumulative and proportion of variances explained by each 
+    the principal component in the Engagement subscale.")
+
+
+
+```
+
+When lokoing at the variance proportions we see the 6th compnent drops under 7%. However when looking at the first four we see a total variations of 53%. This shows a major difference and can indicate a large variance.
+
+
+```{r extract }
+
+pca <- prcomp(engagement, center = TRUE, scale = TRUE)
+sc.idx1 = pca$x[,1]
+sc.idx2 = pca$x[,2]
+sc.idx3 = pca$x[,3]
+sc.idx4 = pca$x[,4]
+
+
+hist(sc.idx1,
+main="Distribution of First Student Engagement Component",
+breaks = seq(min(sc.idx1), max(sc.idx1), length=9),
+xlab="Student Engagement Index",
+xlim=range(sc.idx1),
+border="red",
+col="lightblue",
+freq=FALSE
+)   
+   
+hist(sc.idx3,
+main="Distribution of Third Student Engagement Component",
+breaks = seq(min(sc.idx3), max(sc.idx3), length=9),
+xlab="Student Engagement Index",
+xlim=range(sc.idx3),
+border="red",
+col="lightblue",
+freq=FALSE
+)
+
+hist(sc.idx4,
+main="Distribution of Fourth Student Engagement Component",
+breaks = seq(min(sc.idx4), max(sc.idx4), length=9),
+xlab="Student Engagement Index",
+xlim=range(sc.idx4),
+border="red",
+col="lightblue",
+freq=FALSE
+)
+```
+
+The distributions the density and student engagement shows a normal distribution. 
+
+# Final correlation matrix
+
+```{r}
+
+M98=cor(cbind(sc.idx1, sc.idx2, sc.idx3, sc.idx4, engagement))
+#corrplot(M, type = "upper", method = "ellipse", main="Pairwise Correlation Plot: Self-Compassion Scale")
+corrplot.mixed(M98, lower.col = "purple", upper = "ellipse", number.cex = .7, tl.cex = 0.7)
+```  
+    
+Looking at the final correlation matrix we see that 2, 3, and 4 are the only components that are negatively correlated. Each of the other compnents is made of positive correlation. This could provide issues when looking at total variation as using the total variation could be inaccurate.
+Therefore we conclude that the model is moderately reliable.
+    
+    
+    
+    
