@@ -1,0 +1,251 @@
+---
+title: "Exploratory Data Analysis and Data Preprocessing"
+author: "Samantha Gouveia"
+date: "03/08/2024"
+output:
+ html_document:
+  toc: yes
+  toc_depth: 4
+  toc_float: yes
+  fig_width: 6
+  fig_caption: yes
+  number_sections: yes
+  theme: readable
+  editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+```{=html}
+
+<style type="text/css">
+
+/* Cascading Style Sheets (CSS) is a stylesheet language used to describe the presentation of a document written in HTML or XML. it is a simple mechanism for adding style (e.g., fonts, colors, spacing) to Web documents. */
+
+h1.title {  /* Title - font specifications of the report title */
+  font-size: 24px;
+  color: DarkRed;
+  text-align: center;
+  font-family: "Gill Sans", sans-serif;
+}
+h4.author { /* Header 4 - font specifications for authors  */
+  font-size: 20px;
+  font-family: system-ui;
+  color: DarkRed;
+  text-align: center;
+}
+h4.date { /* Header 4 - font specifications for the date  */
+  font-size: 18px;
+  font-family: system-ui;
+  color: DarkBlue;
+text-align: center;
+}
+h1 { /* Header 1 - font specifications for level 1 section title  */
+    font-size: 22px;
+    font-family: system-ui;
+    color: navy;
+    text-align: left;
+}
+h2 { /* Header 2 - font specifications for level 2 section title */
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    color: navy;
+    text-align: left;
+}
+
+h3 { /* Header 3 - font specifications of level 3 section title  */
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    color: navy;
+    text-align: left;
+}
+
+h4 { /* Header 4 - font specifications of level 4 section title  */
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    color: darkred;
+    text-align: left;
+}
+
+body { background-color:white; }
+
+.highlightme { background-color:yellow; }
+
+p { background-color:white; }
+
+</style>
+```
+
+```{r setup, include=FALSE}
+
+library(knitr)
+   library(car)
+   library(dplyr)
+   library(kableExtra)
+   library(pander)
+knitr::opts_chunk$set(echo = TRUE,  
+                      warning = FALSE, 
+                      result = TRUE,
+                      message = FALSE,
+                      comment = NA
+                      )   
+```
+
+
+
+#Data Introduction 
+
+The data we are using is from the U.S. Small Business Administration. It provides historical data from 1987 until 2014. 
+
+There are 27 variables and 899,164 observations each representing a loan.
+
+```{r}
+loan01 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational01.csv", header = TRUE)[, -1]
+loan02 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational02.csv", header = TRUE)[, -1]
+loan03 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational03.csv", header = TRUE)[, -1]
+loan04 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational04.csv", header = TRUE)[, -1]
+loan05 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational05.csv", header = TRUE)[, -1]
+loan06 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational06.csv", header = TRUE)[, -1]
+loan07 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational07.csv", header = TRUE)[, -1]
+loan08 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational08.csv", header = TRUE)[, -1]
+loan09 = read.csv("https://pengdsci.github.io/datasets/SBAloan/w06-SBAnational09.csv", header = TRUE)[, -1]
+loan = rbind(loan01, loan02, loan03, loan04, loan05, loan06, loan07, loan08, loan09)
+# dim(bankLoan)
+#names(bankLoan)
+```
+
+# Remove missing values
+
+We begin by removing any loans that are missing an MIS Status.
+
+```{r Remove Missing Values}
+
+###1 Remove missing MIS_Status values 
+nloan <- na.omit(loan)
+sum2 <- sum(is.na(nloan$MIS_Status))
+
+kable(sum2, format = "markdown", col.names = c("Number of Missing MIS_Status Values"))
+```
+
+We find there are 0 observations missing an MIS Status value.
+
+# Formatting variables 
+
+We look at 5 variables. DisbursementGross, BalanceGross, ChgOffPrinGr, GrAppv, and SBA_Appve and change them to be regular numeric variables. 
+```{r}
+currency_vars <- c('DisbursementGross', 'BalanceGross', 'ChgOffPrinGr', 'GrAppv', 'SBA_Appv')
+
+for (var in currency_vars) {
+  loan[, var] <- as.numeric(gsub("[\\$,]", "", loan[, var]))
+}
+
+```
+
+# Stratifing the Population
+
+We stratify the population based on the region the loan is in. There are 7 regions we will look at
+- New England 
+- Mid-Atlantic
+- South
+- Great Lakes
+- Midwest
+- Pacific Coast
+- Non Continental
+- Rocky Mountains
+
+By stratifying the data into regions we have created 7 sub populations. This will allow us to see a more accurate result due to there being smaller sample sizes.
+
+```{r}
+
+#Remove observations w/o state classification
+nloan$State[nloan$State == ""] <- NA
+nloan <- na.omit(nloan)
+
+
+cnvrt <- c(
+   "ME" = "New England", "NH" = "New England", "VT" = "New England", "MA" = "New England", "RI" = "New England", "CT" = "New England",
+   "NJ" = "Mid-Atlantic", "DE" = "Mid-Atlantic", "MD" = "Mid-Atlantic", "DC" = "Mid-Atlantic",  
+   "WV" = "South", "VA" = "South", "NC" = "South", "SC" = "South", "GA" = "South", "FL" = "South", "KY" = "South", "TN" = "South", "AL" = "South", "MS" = "South", "AR" = "South", "LA" = "South",
+   "MN" = "Great Lakes", "WI" = "Great Lakes", "MI" = "Great Lakes", "OH" = "Great Lakes ", "IN" = "Great Lakes", "IL" = "Great Lakes", "IA" = "Great Lakes","NY" = "Great Lakes",  "PA" = "Great Lakes", "MO" = "Midwest",
+   "ND" = "Midwest", "SD" = "Midwest", "NE" = "Midwest", "KS" = "Midwest ", "OK" = "Midwest",
+   "MT" = "Rocky Mountain", "WY" = "Rocky Mountain", "CO" = "Rocky Mountain", "UT" = "Rocky Mountain", "ID" = "Rocky Mountain",
+   "NV" = "Southwest", "AZ" = "Southwest", "NM" = "Southwest", "TX" = "Southwest",
+   "WA" = "Pacific Coast", "OR" = "Pacific Coast", "CA" = "Pacific Coast",
+   "AK" = "Non Continental", "HI" = "Non Continental"
+  
+)
+
+nloan$Region <- cnvrt[nloan$State]
+
+cregion <- nloan %>%
+  count(Region) %>%
+  rename(Count = n)
+
+kable_region <- kable(cregion, format = "markdown")
+
+kable_region
+```
+
+# Default rate
+
+We now find the default rates of the regions by account charged.
+```{r}
+
+default_rate <-  nloan %>%
+  group_by(Region) %>%
+  summarize(Count = n(),
+            CHGOFF_count = sum(MIS_Status == "CHGOFF"),
+            Default_Rate = (CHGOFF_count / Count) * 100
+            )
+
+kable_rdefault <- kable(default_rate, format = "markdown", col.names = c("Region", "Count", "Number Defaulted", "Default Rate"))
+
+kable_rdefault
+```
+
+
+# Density Curved
+
+```{r}
+# Ensure 'SBA_Appv' is numeric and 'Region' is a factor
+nloan$SBA_Appv <- as.numeric(nloan$SBA_Appv)
+nloan$Region <- as.factor(nloan$Region)
+
+# Define colors for the density curves
+colors <- rainbow(length(levels(nloan$Region)))
+
+# Initialize the plot
+plot(NULL, xlim = c(0, 1000000), ylim = c(0, 1e-06), 
+     main = "Density of SBA_Appv Across Regions",
+     xlab = "SBA_Appv", ylab = "Density")
+
+# Loop through each region and plot density curves
+for (i in seq_along(levels(nloan$Region))) {
+  region <- levels(nloan$Region)[i]
+  
+  # Remove NA values for the specific subset
+  subset_data <- nloan$SBA_Appv[nloan$Region == region]
+  subset_data <- subset_data[!is.na(subset_data)]
+  
+  # Plot the density if there are enough data points
+  if (length(subset_data) >= 2) {
+    lines(density(subset_data), col = colors[i], lwd = 2)
+  } else {
+    warning(paste("Not enough data points to plot density for", region))
+  }
+}
+
+# Add a legend
+legend("topright", legend = levels(nloan$Region), col = colors, lwd = 2)
+```
+
+Looking at the density curves we see the distribution of the different regions in relation to the SBA_Appv. We can see the spread of our discretized bins as well.
+
+#Summary 
+
+In conclusion we looked at data in relation to MIS Status and completed data analysis and processing.
+We looked at the regions of the US in relation to the GrAppv. Through this we looked at the impact on each region based on loans.
+
+
